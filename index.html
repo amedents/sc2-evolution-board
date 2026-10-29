@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<script>
+/* Framed inside the App Hub, the Hub's bar has already cleared the notch: see --padtop below.
+   ?theme=light exists for the design look pass only; the app is dark like every app on this phone. */
+try{if(window.top!==window.self)document.documentElement.classList.add("framed");}
+catch(e){document.documentElement.classList.add("framed");}
+if(/[?&]theme=light/.test(location.search))document.documentElement.setAttribute("data-theme","light");
+</script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="color-scheme" content="dark" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="SC2 Evolution" />
+<meta name="theme-color" content="#12161b" />
+<link rel="apple-touch-icon" sizes="180x180" href="icon-180.png" />
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png" />
+<title>SC2 Evolution</title>
+<style>
+/* Generated: design_geometry.py system --base 16 --ratio minor-third --unit 4 --seed #4a9eff
+   Every value is derived. Change the command and regenerate; never hand-edit a number here.
+   The seed is the Queue Board's and the Paper Trader's blue, so the boards on this phone read as one family. */
+@layer tokens, base;
+@layer tokens {
+:root {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
+  --fs-xs: 0.6875rem; --lh-xs: 1.25rem; --tr-xs: 0.005em;
+  --fs-sm: 0.8125rem; --lh-sm: 1.25rem; --tr-sm: -0.003em;
+  --fs-base: 1rem; --lh-base: 1.5rem; --tr-base: -0.011em;
+  --fs-lg: 1.1875rem; --lh-lg: 1.75rem; --tr-lg: -0.016em;
+  --fs-xl: 1.4375rem; --lh-xl: 2rem; --tr-xl: -0.019em;
+  --measure: 66ch;
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem; --space-6: 1.5rem; --space-8: 2rem; --space-12: 3rem;
+  --radius-sm: 0.25rem; --radius-md: 0.5rem; --radius-lg: 1rem; --radius-pill: 9999px;
+  --control-sm: 2rem; --control-md: 2.5rem; --control-lg: 3rem;
+  color-scheme: light;
+  --surface: #ffffff; --bg: #f7faff; --surface-2: #eef4fc; --border: #e1e6ee; --text: #20242a; --text-muted: #6b7077; --border-strong: #888d94; --primary: #4a9eff; --on-primary: #12161b; --focus: #0c6cc9; --danger: #c23e37; --danger-soft: #fdebe9; --warning: #996000; --warning-soft: #f6ede4; --success: #007d38; --success-soft: #e5f2e7;
+  --shadow-2: 0 4px 8px -2px rgb(18 22 27 / 0.16), 0 1px 2px rgb(18 22 27 / 0.06);
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #12161b; --surface: #1d2126; --surface-2: #252a2f; --border: #30353a; --text: #f9fcff; --text-muted: #8b9097; --border-strong: #6d7379; --primary: #4a9eff; --on-primary: #12161b; --focus: #4a9eff; --danger: #f36b60; --danger-soft: #432828; --warning: #d18500; --warning-soft: #382d21; --success: #20ac54; --success-soft: #193427;
+  --shadow-2: 0 4px 8px -2px rgb(18 22 27 / 0.45), 0 1px 2px rgb(18 22 27 / 0.30);
+}
+}
+@layer base {
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-sans);
+  font-size: var(--fs-base); line-height: var(--lh-base); letter-spacing: var(--tr-base);
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+button, input, textarea { font: inherit; letter-spacing: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+}
+
+/* ---- the eight seat colours -----------------------------------------------------------------------
+   SC2's own player colours, per theme: SC2's hue and chroma (chroma floored at 0.10), and SC2's lightness ORDER
+   mapped linearly into OKLCH L 0.45-0.66 (light) and 0.56-0.82 (dark), each at least 3:1 on the surface it sits on.
+   The order is kept, not flattened: Purple and Pink share a hue (307 vs 304) and differ only in lightness, and one
+   lightness for all eight made them the same colour. The palette fails dataviz's colour-blind separation (Green
+   beside Orange, Orange beside Yellow) and cannot pass while staying SC2's - so a colour never stands alone here:
+   every chart, section, jump button and table row names it. Derivation: board/README.md. */
+:root { --seat-1: #b91b22; --seat-2: #0346ff; --seat-3: #0084bd; --seat-4: #702ca1;
+        --seat-5: #9e9700; --seat-6: #c16600; --seat-7: #167e00; --seat-8: #9772c3; }
+:root[data-theme="dark"] { --seat-1: #e54c47; --seat-2: #4a82ff; --seat-3: #2fb2f5; --seat-4: #914fc5;
+        --seat-5: #d4ca00; --seat-6: #ff8c17; --seat-7: #45a638; --seat-8: #c6a0f6; }
+
+/* ---- page frame ----------------------------------------------------------------------------------
+   THE PAGE DOES NOT SCROLL; #scroll does, under a header that never moves - position:fixed is avoided because
+   iOS treats it as absolute inside the App Hub's iframe (the Queue Board measured exactly that). */
+:root { --padtop: max(var(--space-3), env(safe-area-inset-top)); --tap: var(--control-lg); }
+html.framed { --padtop: var(--space-3); }
+html, body { height: 100%; overflow: hidden; overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
+body { display: flex; flex-direction: column; }
+.col { width: 100%; max-width: 72rem; margin: 0 auto; padding-left: var(--space-4); padding-right: var(--space-4); }
+header { flex: 0 0 auto; border-bottom: 1px solid var(--border); background: var(--bg); position: relative; }
+header .col { padding-top: var(--padtop); padding-bottom: var(--space-3); }
+#scroll { flex: 1 1 auto; overflow-y: auto; overflow-x: hidden; overscroll-behavior-y: contain; }
+#scroll .col { padding-top: var(--space-4); padding-bottom: calc(var(--space-12) + env(safe-area-inset-bottom)); }
+.hide { display: none !important; }
+
+/* The health light: green while the training loop is publishing, amber when it has gone quiet, red when the
+   numbers are history. Inset equally from the top and the right. */
+#light { position: absolute; top: calc(var(--padtop) + var(--space-2)); right: var(--space-4);
+  width: var(--space-2); height: var(--space-2); border-radius: var(--radius-pill);
+  background: var(--success); box-shadow: 0 0 0 var(--space-1) var(--success-soft); }
+#light.stale { background: var(--warning); box-shadow: 0 0 0 var(--space-1) var(--warning-soft); }
+#light.dead { background: var(--danger); box-shadow: 0 0 0 var(--space-1) var(--danger-soft); }
+
+.dateline { min-height: var(--lh-sm); font-size: var(--fs-sm); line-height: var(--lh-sm); letter-spacing: 0.08em;
+  text-transform: uppercase; font-weight: 600; }
+.subline { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  margin-top: var(--space-1); color: var(--text-muted); font-size: var(--fs-sm); line-height: var(--lh-sm);
+  font-variant-numeric: tabular-nums; }
+.subline > span { min-width: 0; }
+
+/* Charts | Table: a segmented control, inner radius = outer - padding (concentric). */
+.seg { flex: none; display: inline-flex; padding: var(--space-1); gap: var(--space-1); border-radius: var(--radius-md);
+  background: var(--surface-2); }
+.seg button { height: calc(var(--control-sm) - var(--space-2)); padding: 0 var(--space-3); border: 0;
+  border-radius: var(--radius-sm); background: transparent; color: var(--text-muted); cursor: pointer;
+  font-size: var(--fs-sm); line-height: var(--lh-sm); font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-2); }
+
+/* The colour jump: SC2's lobby split, four and four, on a phone; one row when there is room. */
+.jump { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); margin-top: var(--space-3); }
+@media (min-width: 40rem) { .jump { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+.jump button { display: flex; align-items: center; justify-content: center; gap: var(--space-2); height: var(--control-md);
+  padding: 0 var(--space-2); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface);
+  cursor: pointer; font-size: var(--fs-sm); line-height: var(--lh-sm); min-width: 0; }
+.dot { flex: none; width: var(--space-3); height: var(--space-3); border-radius: var(--radius-pill); background: var(--seat); }
+
+/* ---- the charts ---------------------------------------------------------------------------------- */
+.err { background: var(--danger-soft); color: var(--danger); border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4); margin-bottom: var(--space-4); overflow-wrap: anywhere; }
+.legend { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); color: var(--text-muted);
+  font-size: var(--fs-sm); line-height: var(--lh-sm); }
+.legend span { display: inline-flex; align-items: center; gap: var(--space-2); }
+.legend svg { flex: none; }
+section.colour { scroll-margin-top: var(--space-4); }
+h2 { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-8) 0 var(--space-3);
+  font-size: var(--fs-sm); line-height: var(--lh-sm); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
+@media (min-width: 56rem) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.card { position: relative; margin: 0; background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4) var(--space-2); }
+.card h3 { display: flex; align-items: baseline; gap: var(--space-2); margin: 0; font-size: var(--fs-sm);
+  line-height: var(--lh-base); font-weight: 600; letter-spacing: var(--tr-sm); }
+.card h3 .dot { align-self: center; }
+.card h3 .nm { flex: 1 1 auto; min-width: 0; }
+.card h3 .gen { flex: none; color: var(--text-muted); font-weight: 400; }
+.card h3 .wr { flex: none; font-size: var(--fs-lg); line-height: var(--lh-base); letter-spacing: var(--tr-lg); }
+.plot { display: block; width: 100%; margin-top: var(--space-1); touch-action: pan-y; }
+.plot text { fill: var(--text-muted); font-size: var(--fs-xs); font-family: var(--font-sans); font-variant-numeric: tabular-nums; }
+.plot .grid0 { stroke: var(--border); stroke-width: 1; }
+.plot .mid { stroke: var(--border-strong); stroke-width: 1; }
+.plot .band { fill: var(--seat); fill-opacity: 0.12; }
+.plot .line { fill: none; stroke: var(--seat); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.plot .stock { fill: none; stroke: var(--border-strong); stroke-width: 2; stroke-dasharray: 4 4; stroke-linejoin: round; }
+.plot .mark { fill: var(--seat); stroke: var(--surface); stroke-width: 2; }
+.plot .cross { stroke: var(--text-muted); stroke-width: 1; }
+.plot .hit { fill: transparent; }
+
+.tip { position: absolute; z-index: 1; pointer-events: none; min-width: 9rem; padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md); background: var(--surface-2); box-shadow: var(--shadow-2);
+  font-size: var(--fs-sm); line-height: var(--lh-sm); font-variant-numeric: tabular-nums; }
+.tip .row { display: flex; align-items: center; gap: var(--space-2); }
+.tip b, td b { font-weight: 600; }
+.muted { color: var(--text-muted); }
+
+/* ---- the table: the same numbers without a chart, and without hovering ---------------------------- */
+table { width: 100%; border-collapse: collapse; font-size: var(--fs-sm); line-height: var(--lh-sm); font-variant-numeric: tabular-nums; }
+th, td { padding: var(--space-2); border-bottom: 1px solid var(--border); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; padding-left: 0; }
+th:last-child, td:last-child { padding-right: 0; }
+thead th { color: var(--text-muted); font-weight: 600; }
+tbody th { font-weight: 400; }
+tbody th span { display: inline-flex; align-items: center; gap: var(--space-2); }
+tr.group th { padding-top: var(--space-6); color: var(--text-muted); font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+
+footer { margin-top: var(--space-12); padding-top: var(--space-4); border-top: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); color: var(--text-muted);
+  font-size: var(--fs-sm); line-height: var(--lh-sm); }
+footer a { color: var(--text-muted); margin-left: auto; }
+
+/* ---- pairing (phone only) ------------------------------------------------------------------------ */
+#pair, #handoff { padding-top: var(--space-6); max-width: 40rem; }
+#pair h1, #handoff h1 { margin: 0 0 var(--space-4); font-size: var(--fs-xl); line-height: var(--lh-xl); letter-spacing: var(--tr-xl); font-weight: 600; }
+textarea { width: 100%; min-height: calc(var(--space-12) * 2); padding: var(--space-3); border-radius: var(--radius-md);
+  border: 1px solid var(--border-strong); background: var(--surface); font-family: var(--font-mono);
+  font-size: var(--fs-base); line-height: var(--lh-base); resize: vertical; overflow-wrap: anywhere; }
+.btns { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+.btn { height: var(--tap); padding: 0 var(--space-6); border-radius: var(--radius-md); border: 1px solid var(--border);
+  background: var(--surface); cursor: pointer; font-weight: 600; }
+.btn.p { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.msg { margin-top: var(--space-3); min-height: var(--lh-base); }
+.msg.bad { color: var(--danger); }
+</style>
+</head>
+<body>
+
+<header id="head" class="hide">
+  <div class="col">
+    <div class="dateline">SC2 Evolution</div>
+    <div class="subline"><span id="games"></span>
+      <div class="seg" role="group" aria-label="View"><button id="vCharts" aria-pressed="true">Charts</button><button id="vTable" aria-pressed="false">Table</button></div>
+    </div>
+    <nav class="jump" id="jump" aria-label="Colours"></nav>
+  </div>
+  <div id="light" class="hide"></div>
+</header>
+
+<div id="scroll">
+  <div class="col">
+    <section id="pair" class="hide">
+      <h1>SC2 Evolution</h1>
+      <textarea id="pairIn" placeholder="eb1.&hellip;" autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+      <div class="btns"><button class="btn p" id="pairGo">Pair</button><button class="btn" id="pairPaste">Paste</button></div>
+      <div id="pairMsg" class="msg bad"></div>
+    </section>
+
+    <!-- Opened from the pairing QR. A home-screen app keeps its own storage, separate from Safari's, so
+         pairing in Safari would key a copy nobody opens: this screen only hands the code to the clipboard,
+         and the paste happens inside the App Hub. -->
+    <section id="handoff" class="hide">
+      <h1>Pairing code</h1>
+      <textarea id="hoCode" readonly autocapitalize="off" autocorrect="off" spellcheck="false"></textarea>
+      <div class="btns"><button class="btn p" id="hoCopy">Copy code</button><button class="btn" id="hoHere">Pair here</button></div>
+      <div id="hoMsg" class="msg"></div>
+    </section>
+
+    <main id="app" class="hide">
+      <div id="err" class="err hide"></div>
+      <div id="charts"><div class="legend" id="legend"></div><div id="sections"></div></div>
+      <div id="table" class="hide"></div>
+      <footer><span id="age"></span><span id="span"></span><a href="#" id="unpair">Unpair</a></footer>
+    </main>
+  </div>
+</div>
+
+<script>
+"use strict";
+var LS = "sc2_evolution_board_v1";
+var POLL_MS = 60000;   /* the training loop publishes at most every 5 min and the gist CDN adds ~1 min */
+var DESKTOP = !!(window.chrome && window.chrome.webview);
+var SELFTEST = /[?&]selftest/.test(location.search);
+var FIXTURE = (location.search.match(/[?&]fixture=([\w.\-\/]+)/) || [])[1];   /* relative paths only */
+var SVGNS = "http://www.w3.org/2000/svg";
+var U = 4;   /* the 4 px grid unit every plot margin and mark is a multiple of */
+var RACES = ["Protoss", "Terran", "Zerg"];
+
+function el(id) { return document.getElementById(id); }
+function make(tag, cls, text) {
+  var n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text != null) n.textContent = text;
+  return n;
+}
+function svg(tag, attrs, parent) {
+  var n = document.createElementNS(SVGNS, tag);
+  for (var k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function pct(p) { return p == null ? "—" : Math.round(p * 100) + "%"; }
+function pm(se) { return se == null ? "" : "±" + Math.round(2 * se * 100); }
+function stamp(s) {   /* the store's local "YYYY-MM-DD HH:MM:SS" */
+  if (!s) return "";
+  var d = new Date(s.replace(" ", "T"));
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + " "
+    + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+}
+
+/* ---- crypto: the phone half of paper-trader's envelope, shared byte for byte -----------------------
+   The PC appends the 16-byte GCM tag to the ciphertext, which is the layout crypto.subtle.decrypt wants.
+   `z:"gzip"`: the plaintext was gzipped before encryption, the only place compression can happen.
+   selftest.py lifts this block out and runs it under node against board.py's encryption. */
+/* <crypto> */
+function b64bytes(b64) {
+  var bin = atob(b64), a = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i);
+  return a;
+}
+function decryptPayload(cfg, doc) {
+  return crypto.subtle.importKey("raw", b64bytes(cfg.key), { name: "AES-GCM" }, false, ["decrypt"])
+    .then(function (k) { return crypto.subtle.decrypt({ name: "AES-GCM", iv: b64bytes(doc.iv) }, k, b64bytes(doc.ct)); })
+    .then(function (buf) {
+      if (doc.z !== "gzip") return new TextDecoder().decode(buf);
+      return new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream("gzip"))).text();
+    })
+    .then(JSON.parse);
+}
+/* </crypto> */
+function parsePair(str) {
+  str = (str || "").trim();
+  if (str.indexOf("eb1.") !== 0) throw new Error("not an SC2 Evolution pairing code");
+  var raw = atob(str.slice(4)), cut = raw.lastIndexOf("|");
+  if (cut < 0) throw new Error("pairing code is incomplete");
+  var url = raw.slice(0, cut), key = raw.slice(cut + 1);
+  if (!/^https:\/\//.test(url)) throw new Error("pairing code carries no https address");
+  if (b64bytes(key).length !== 32) throw new Error("pairing code carries no 256-bit key");
+  return { url: url, key: key };
+}
+function cfgLoad() { try { return JSON.parse(localStorage.getItem(LS)) || null; } catch (e) { return null; } }
+function cfgSave(c) { try { localStorage.setItem(LS, JSON.stringify(c)); return true; } catch (e) { return false; } }
+
+/* ---- one chart ----------------------------------------------------------------------------------- */
+var snap = null, view = "charts", lastErr = "", charts = [];
+
+function seatVar(seat) { return "var(--seat-" + seat + ")"; }
+function last(pts) { return pts && pts.length ? pts[pts.length - 1] : null; }
+function at(pts, x) {   /* the last point at or before x (pts are in x order) */
+  var lo = 0, hi = pts.length - 1, best = -1;
+  while (lo <= hi) { var m = (lo + hi) >> 1; if (pts[m][0] <= x) { best = m; lo = m + 1; } else hi = m - 1; }
+  return best;
+}
+function nearest(pts, x) {
+  var i = at(pts, x);
+  if (i < 0) return pts.length ? 0 : -1;
+  if (i + 1 < pts.length && pts[i + 1][0] - x < x - pts[i][0]) return i + 1;
+  return i;
+}
+function genAt(promos, x) { var g = 0; promos.forEach(function (p) { if (p[0] < x) g = p[1]; }); return g; }
+function niceStep(span, most) {   /* the smallest 1-2-5 step that puts at most `most` ticks on 1..span */
+  for (var p = 1; ; p *= 10)
+    for (var i = 0, s = [1, 2, 5]; i < 3; i++) if (Math.floor(span / (s[i] * p)) <= most) return s[i] * p;
+}
+function xy(c, q) { return c.X(q[0]).toFixed(1) + "," + c.Y(q[1]).toFixed(1); }
+
+/* Drawn at the card's own pixel width, so text and strokes are never scaled: 16:9 overall, margins on the 4 px
+   grid (the left one fits "100", the bottom one an xs line). */
+function draw(c) {
+  var W = Math.max(c.svg.clientWidth, 10 * U), H = Math.round(W * 9 / 16);
+  var M = { l: 6 * U, r: 2 * U, t: 2 * U, b: 5 * U };
+  var n = Math.max(snap.games, 2), s = c.svg;
+  c.X = function (x) { return M.l + (x - 1) / (n - 1) * (W - M.l - M.r); };
+  c.Y = function (p) { return M.t + (1 - p) * (H - M.t - M.b); };
+  c.M = M; c.W = W; c.n = n;
+  while (s.firstChild) s.removeChild(s.firstChild);
+  s.setAttribute("viewBox", "0 0 " + W + " " + H);
+  s.setAttribute("height", H);
+  [0, 0.5, 1].forEach(function (p) {
+    var y = Math.round(c.Y(p)) + 0.5;   /* a 1 px hairline sits on a half pixel */
+    svg("line", { x1: M.l, x2: W - M.r, y1: y, y2: y, "class": p === 0.5 ? "mid" : "grid0" }, s);
+    svg("text", { x: M.l - 2 * U, y: y, "text-anchor": "end", "dominant-baseline": "middle" }, s).textContent = String(p * 100);
+  });
+  var step = niceStep(n, W < 90 * U ? 3 : 5);
+  for (var t = step; t <= n; t += step)
+    svg("text", { x: c.X(t), y: H - U, "text-anchor": c.X(t) > W - M.r - 3 * U ? "end" : "middle" }, s).textContent = String(t);
+  var pts = c.v.pts;
+  if (pts.length) {
+    var upper = [], lower = [];
+    pts.forEach(function (q) {
+      var e = q[2] == null ? 0 : 2 * q[2];
+      upper.push(xy(c, [q[0], Math.min(1, q[1] + e)]));
+      lower.unshift(xy(c, [q[0], Math.max(0, q[1] - e)]));
+    });
+    svg("polygon", { points: upper.concat(lower).join(" "), "class": "band" }, s);
+  }
+  if (c.stock.length) svg("polyline", { points: c.stock.map(function (q) { return xy(c, q); }).join(" "), "class": "stock" }, s);
+  if (pts.length) {
+    svg("polyline", { points: pts.map(function (q) { return xy(c, q); }).join(" "), "class": "line" }, s);
+    c.p.promotions.forEach(function (pr) {
+      /* A promotion's x counts the games ended by then, the deciding one included: the new champion's first game
+         is the first point past it, never the point at it (that is the old champion's, or the trial's). */
+      var i = at(pts, pr[0]) + 1;
+      if (i >= pts.length) return;
+      svg("circle", { cx: c.X(pts[i][0]), cy: c.Y(pts[i][1]), r: U, "class": "mark promo" }, s);
+    });
+    var e = last(pts);
+    svg("circle", { cx: c.X(e[0]), cy: c.Y(e[1]), r: U, "class": "mark end" }, s);
+  }
+  c.cross = svg("line", { y1: M.t, y2: H - M.b, "class": "cross hide" }, s);
+  c.hot = svg("circle", { r: U, "class": "mark hide" }, s);
+  var hit = svg("rect", { x: 0, y: 0, width: W, height: H, "class": "hit" }, s);
+  hit.addEventListener("pointerdown", function (ev) { point(c, ev); });
+  hit.addEventListener("pointermove", function (ev) { point(c, ev); });
+  hit.addEventListener("pointerleave", function (ev) { if (ev.pointerType === "mouse") hideTip(c); });
+}
+function shownPromos(c) {   /* the promotions draw() can place: those the line has a game after */
+  var e = last(c.v.pts);
+  return e ? c.p.promotions.filter(function (p) { return p[0] < e[0]; }).length : 0;
+}
+
+function point(c, ev) {
+  var r = c.svg.getBoundingClientRect();
+  showTip(c, nearest(c.v.pts, 1 + (ev.clientX - r.left - c.M.l) / (c.W - c.M.l - c.M.r) * (c.n - 1)));
+}
+function showTip(c, i) {
+  charts.forEach(function (o) { if (o !== c) hideTip(o); });
+  var pts = c.v.pts;
+  if (i < 0 || !pts.length) return;
+  var q = pts[i], cx = c.X(q[0]), si = at(c.stock, q[0]), sq = si < 0 ? null : c.stock[si];
+  c.cross.setAttribute("x1", Math.round(cx) + 0.5); c.cross.setAttribute("x2", Math.round(cx) + 0.5);
+  c.cross.classList.remove("hide");
+  c.hot.setAttribute("cx", cx); c.hot.setAttribute("cy", c.Y(q[1])); c.hot.classList.remove("hide");
+  c.idx = i;
+  var tip = c.tip, gen = genAt(c.p.promotions, q[0]);
+  tip.textContent = "";
+  var r1 = make("div", "row"); r1.appendChild(key(seatVar(c.p.seat), false));
+  r1.appendChild(make("b", null, pct(q[1]))); r1.appendChild(make("span", "muted", pm(q[2])));
+  var r2 = make("div", "row"); r2.appendChild(key("var(--border-strong)", true));
+  r2.appendChild(make("b", null, sq ? pct(sq[1]) : "—")); r2.appendChild(make("span", "muted", "stock AI"));
+  tip.appendChild(r1); tip.appendChild(r2);
+  tip.appendChild(make("div", "muted", "game " + q[0] + (gen ? " · generation " + gen : "")));
+  tip.classList.remove("hide");
+  var cw = c.card.clientWidth, tw = tip.offsetWidth, left = c.svg.offsetLeft + cx + 3 * U;
+  if (left + tw > cw - U) left = c.svg.offsetLeft + cx - 3 * U - tw;
+  tip.style.left = Math.max(U, Math.round(left)) + "px";
+  tip.style.top = Math.round(c.svg.offsetTop + 2 * U) + "px";
+}
+function hideTip(c) {
+  if (!c.tip) return;
+  c.tip.classList.add("hide");
+  if (c.cross) c.cross.classList.add("hide");
+  if (c.hot) c.hot.classList.add("hide");
+}
+function key(colour, dashed) {
+  var k = svg("svg", { width: 4 * U, height: 2 * U, "aria-hidden": "true" });
+  svg("line", { x1: 1, x2: 4 * U - 1, y1: U, y2: U, stroke: colour, "stroke-width": 2, "stroke-linecap": "round",
+    "stroke-dasharray": dashed ? "4 4" : "none" }, k);
+  return k;
+}
+
+/* ---- the page ------------------------------------------------------------------------------------ */
+function profileName(p) { return p.colour + " " + p.race; }
+function chartName(p, o) { return profileName(p) + " vs " + o; }
+function races() { return snap.races || RACES; }
+
+function legend() {
+  var lg = el("legend");
+  lg.textContent = "";
+  function item(mark, text) { var s = make("span"); s.appendChild(mark); s.appendChild(document.createTextNode(text)); lg.appendChild(s); }
+  item(key("var(--text)", false), "champion");
+  item(key("var(--border-strong)", true), "stock AI");
+  var pk = svg("svg", { width: 3 * U, height: 3 * U, "aria-hidden": "true" });
+  svg("circle", { cx: 1.5 * U, cy: 1.5 * U, r: U, fill: "var(--text)" }, pk);
+  item(pk, "promotion");
+  var bk = svg("svg", { width: 4 * U, height: 3 * U, "aria-hidden": "true" });
+  svg("rect", { x: 0, y: 0, width: 4 * U, height: 3 * U, rx: 1, fill: "var(--text)", "fill-opacity": 0.12 }, bk);
+  item(bk, "±2 SE · last " + (snap.window || 30) + " games");
+}
+
+function build() {
+  var sec = el("sections"), jump = el("jump"), bySeat = {};
+  sec.textContent = ""; jump.textContent = ""; charts = [];
+  legend();
+  snap.profiles.forEach(function (p) { (bySeat[p.seat] = bySeat[p.seat] || []).push(p); });
+  Object.keys(bySeat).sort(function (a, b) { return a - b; }).forEach(function (seat) {
+    var ps = bySeat[seat], colour = ps[0].colour;
+    var b = make("button"); b.style.setProperty("--seat", seatVar(seat));
+    b.appendChild(make("span", "dot")); b.appendChild(make("span", null, colour));
+    b.addEventListener("click", function () { setView("charts"); el("seat-" + seat).scrollIntoView({ block: "start" }); });
+    jump.appendChild(b);
+    var s = make("section", "colour"); s.id = "seat-" + seat; s.style.setProperty("--seat", seatVar(seat));
+    var h = make("h2"); h.appendChild(make("span", "dot")); h.appendChild(document.createTextNode(colour)); s.appendChild(h);
+    var g = make("div", "grid");
+    ps.forEach(function (p) {
+      races().forEach(function (o) {
+        var v = p.vs[o] || { games: 0, pts: [] }, e = last(v.pts), name = chartName(p, o), wr = e ? pct(e[1]) : "—";
+        var card = make("figure", "card");
+        card.setAttribute("aria-label", name + " " + wr);
+        var t = make("h3"); t.appendChild(make("span", "dot")); t.appendChild(make("span", "nm", name));
+        if (p.generation) t.appendChild(make("span", "gen", "gen " + p.generation));
+        t.appendChild(make("span", "wr", wr));
+        card.appendChild(t);
+        var plot = svg("svg", { "class": "plot", role: "img", "aria-label": name, tabindex: "0" });
+        card.appendChild(plot);
+        var tip = make("div", "tip hide"); card.appendChild(tip);
+        var c = { p: p, o: o, v: v, stock: ((snap.stock || {})[p.race] || {})[o] || [], svg: plot, tip: tip, card: card, idx: -1 };
+        plot.addEventListener("focus", function () { showTip(c, c.v.pts.length - 1); });
+        plot.addEventListener("blur", function () { hideTip(c); });
+        plot.addEventListener("keydown", function (ev) {
+          if (ev.key === "ArrowLeft") { ev.preventDefault(); showTip(c, Math.max(0, c.idx - 1)); }
+          else if (ev.key === "ArrowRight") { ev.preventDefault(); showTip(c, Math.min(c.v.pts.length - 1, c.idx + 1)); }
+        });
+        charts.push(c);
+        g.appendChild(card);
+      });
+    });
+    s.appendChild(g);
+    sec.appendChild(s);
+  });
+  buildTable();
+}
+
+function buildTable() {
+  var tb = el("table"), t = make("table"), hd = make("thead"), hr = make("tr"), body = make("tbody");
+  tb.textContent = "";
+  hr.appendChild(make("th", null, ""));
+  races().forEach(function (o) { hr.appendChild(make("th", null, "vs " + o)); });
+  hd.appendChild(hr); t.appendChild(hd);
+  function cell(e) {
+    var td = make("td");
+    td.appendChild(make("b", null, e ? pct(e[1]) : "—"));
+    if (e && e[2] != null) { td.appendChild(document.createTextNode(" ")); td.appendChild(make("span", "muted", pm(e[2]))); }
+    return td;
+  }
+  snap.profiles.forEach(function (p) {
+    var tr = make("tr"), th = make("th"), sp = make("span");
+    sp.style.setProperty("--seat", seatVar(p.seat));
+    sp.appendChild(make("span", "dot")); sp.appendChild(document.createTextNode(profileName(p)));
+    th.appendChild(sp); tr.appendChild(th);
+    races().forEach(function (o) { tr.appendChild(cell(last((p.vs[o] || {}).pts))); });
+    body.appendChild(tr);
+  });
+  var g = make("tr", "group"), gh = make("th", null, "Stock AI");
+  gh.colSpan = races().length + 1; g.appendChild(gh); body.appendChild(g);
+  races().forEach(function (r) {
+    var tr = make("tr"); tr.appendChild(make("th", null, r));
+    races().forEach(function (o) { tr.appendChild(cell(last(((snap.stock || {})[r] || {})[o]))); });
+    body.appendChild(tr);
+  });
+  t.appendChild(body); tb.appendChild(t);
+}
+
+function setView(v) {
+  view = v;
+  el("vCharts").setAttribute("aria-pressed", String(v === "charts"));
+  el("vTable").setAttribute("aria-pressed", String(v === "table"));
+  el("charts").classList.toggle("hide", v !== "charts");
+  el("table").classList.toggle("hide", v !== "table");
+  el("jump").classList.toggle("hide", v !== "charts");
+  if (v === "charts") charts.forEach(draw);   /* a chart drawn while hidden measured zero width */
+}
+
+function age() { return snap ? (Date.now() - Date.parse(snap.t)) / 1000 : Infinity; }
+function ago(sec) {
+  if (sec < 90) return "just now";
+  if (sec < 5400) return Math.round(sec / 60) + " min ago";
+  if (sec < 172800) return Math.round(sec / 3600) + " h ago";
+  return Math.round(sec / 86400) + " days ago";
+}
+function paintAge() {
+  var a = age(), L = el("light");
+  L.classList.remove("hide", "stale", "dead");
+  /* A running loop publishes every 5 minutes: four missed refreshes is a warning, three hours means it stopped. */
+  if (a > 3 * 3600) L.classList.add("dead"); else if (a > 20 * 60) L.classList.add("stale");
+  el("age").textContent = snap ? "updated " + ago(a) : "";
+}
+
+function setSnap(s) {
+  var top = el("scroll").scrollTop;
+  snap = s;
+  render();
+  el("scroll").scrollTop = top;   /* a refresh every few minutes must not throw the reader back to the top */
+}
+function render() {
+  var err = (snap && snap.error) || lastErr;
+  el("err").textContent = err || "";
+  el("err").classList.toggle("hide", !err);
+  el("app").classList.remove("hide");
+  el("unpair").classList.toggle("hide", DESKTOP || !!FIXTURE);
+  if (!snap) return;   /* nothing ever arrived: the error line alone says why */
+  el("head").classList.remove("hide");
+  el("games").textContent = (snap.games || 0).toLocaleString("en-GB") + " games";
+  el("span").textContent = snap.first ? stamp(snap.first) + " – " + stamp(snap.last) : "";
+  build();
+  setView(view);
+  paintAge();
+}
+
+/* ---- data sources ------------------------------------------------------------------------------ */
+var cfg = null, polling = false;
+function poll() {
+  if (polling || !cfg) return;
+  polling = true;
+  /* The cache-buster is load-bearing: the gist CDN sends max-age=300 and keys on the path. */
+  fetch(cfg.url + "?t=" + Date.now(), { cache: "no-store" })
+    .then(function (r) { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+    .then(function (doc) { if (!doc || !doc.ct) throw new Error("nothing published yet"); return decryptPayload(cfg, doc); })
+    .then(function (s) {
+      lastErr = "";
+      if (!snap || s.t !== snap.t) {
+        try { localStorage.setItem(LS + "_last", JSON.stringify(s)); } catch (e) {}
+        setSnap(s);
+      } else paintAge();
+      if (SELFTEST) verdict(true, "decrypted " + s.profiles.length + " profiles");
+    })
+    .catch(function (e) { lastErr = "cannot read the board: " + e.message; render(); if (SELFTEST) verdict(false, lastErr); })
+    .then(function () { polling = false; });
+}
+function startWeb(c) {
+  cfg = c;
+  el("pair").classList.add("hide");
+  /* Paint the last snapshot at once, so a cold launch offline shows the board it had - with its age. */
+  try { var l = JSON.parse(localStorage.getItem(LS + "_last")); if (l && l.profiles) setSnap(l); } catch (e) {}
+  poll();
+  if (SELFTEST) return;
+  setInterval(poll, POLL_MS);
+  setInterval(paintAge, 30000);
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") poll(); });
+}
+
+/* ?selftest=1 with ?fixture=: assert what the user asked for - every colour x race x opponent once, each named with
+   its colour, race, opponent and winrate, the winrate being the line's last point - plus the table agreeing, the
+   hover readout, and nothing leaving the viewport. Run it inside an iframe of the width under test: headless
+   Chrome keeps a minimum window width above a phone's (the Queue Board learned that from a screenshot). */
+function overflow() {
+  var W = document.documentElement.clientWidth, out = [];
+  document.querySelectorAll("body *").forEach(function (n) {
+    if (n.closest(".hide")) return;
+    var r = n.getBoundingClientRect();
+    var name = n.tagName.toLowerCase() + (n.id ? "#" + n.id : "") + (typeof n.className === "string" && n.className ? "." + n.className.split(" ")[0] : "");
+    if (r.width && r.right > W + 0.5) out.push(name + " ends at " + Math.round(r.right) + " > " + W);
+    if ((n.classList.contains("nm") || n.classList.contains("wr")) && n.scrollWidth > n.clientWidth + 1) out.push(name + " clips its text");
+  });
+  var s = el("scroll");
+  if (s.scrollWidth > s.clientWidth + 1) out.push("#scroll scrolls sideways");
+  return out.slice(0, 6);
+}
+function selfCheck() {
+  var bad = [], names = {}, rs = races();
+  var re = /^(Red|Blue|Teal|Purple|Yellow|Orange|Green|Pink) (Protoss|Terran|Zerg) vs (Protoss|Terran|Zerg)$/;
+  var cards = document.querySelectorAll("#sections figure.card");
+  if (cards.length !== snap.profiles.length * rs.length) bad.push(cards.length + " charts, not " + snap.profiles.length * rs.length);
+  charts.forEach(function (c) {
+    var nm = c.card.querySelector(".nm").textContent, wr = c.card.querySelector(".wr").textContent, e = last(c.v.pts);
+    if (!re.test(nm)) bad.push("chart named " + nm);
+    names[nm] = 1;
+    if (wr !== pct(e && e[1])) bad.push(nm + " shows " + wr + ", its line ends at " + pct(e && e[1]));
+    if (e && c.svg.querySelectorAll(".line").length !== 1) bad.push(nm + " has no line");
+    var dots = c.svg.querySelectorAll(".promo");
+    if (dots.length !== shownPromos(c)) bad.push(nm + " shows " + dots.length + " promotions, not " + shownPromos(c));
+    /* Each dot on the new champion's first game: a game after its promotion, with none of the line's between. */
+    dots.forEach(function (d, k) {
+      var pr = c.p.promotions.filter(function (p) { return p[0] < e[0]; })[k], pts = c.v.pts;
+      if (!pr) return;   /* a dot too many: the count above already said so */
+      var x =Math.round(1 + (+d.getAttribute("cx") - c.M.l) / (c.W - c.M.l - c.M.r) * (c.n - 1));
+      var j = pts.findIndex(function (q) { return q[0] === x; });
+      if (j < 0 || x <= pr[0] || (j > 0 && pts[j - 1][0] > pr[0])) bad.push(nm + " dot for the promotion after game " + pr[0] + " sits at game " + x);
+    });
+  });
+  if (Object.keys(names).length !== cards.length) bad.push("chart names repeat");
+  var c0 = charts.filter(function (c) { return c.v.pts.length > 2; })[0];
+  if (c0) {
+    var mid = Math.floor(c0.v.pts.length / 2), q = c0.v.pts[mid];
+    showTip(c0, mid);
+    var tt = c0.tip.textContent;
+    if (tt.indexOf("game " + q[0]) < 0 || tt.indexOf(pct(q[1])) < 0) bad.push("the readout says " + tt + " at game " + q[0]);
+    hideTip(c0);
+  } else bad.push("no chart with three points to read");
+  bad = bad.concat(overflow().map(function (s) { return "charts: " + s; }));
+  setView("table");
+  var rows = document.querySelectorAll("#table tbody tr:not(.group)");
+  if (rows.length !== snap.profiles.length + rs.length) bad.push("table has " + rows.length + " rows");
+  snap.profiles.forEach(function (p, i) {
+    rs.forEach(function (o, j) {
+      var got = rows[i] && rows[i].children[j + 1].querySelector("b").textContent, e = last(p.vs[o].pts);
+      if (got !== pct(e && e[1])) bad.push("table " + chartName(p, o) + " reads " + got);
+    });
+  });
+  bad = bad.concat(overflow().map(function (s) { return "table: " + s; }));
+  setView("charts");
+  return bad;
+}
+function verdict(ok, msg) {
+  var v = document.createElement("div");
+  v.id = "verdict"; v.textContent = (ok ? "PASS " : "FAIL ") + msg;
+  document.body.appendChild(v);
+}
+
+/* ---- input ------------------------------------------------------------------------------------- */
+el("vCharts").addEventListener("click", function () { setView("charts"); });
+el("vTable").addEventListener("click", function () { setView("table"); });
+document.addEventListener("pointerdown", function (ev) {
+  if (!ev.target.closest || !ev.target.closest(".plot")) charts.forEach(hideTip);
+});
+var resizing = 0;
+window.addEventListener("resize", function () {
+  clearTimeout(resizing);
+  resizing = setTimeout(function () { if (snap && view === "charts") charts.forEach(draw); }, 150);
+});
+document.addEventListener("keydown", function (e) {
+  if (DESKTOP && (e.key === "F5" || (e.ctrlKey && e.key === "r"))) {
+    e.preventDefault(); window.chrome.webview.postMessage("refresh");   /* the host re-reads the store */
+  }
+});
+el("pairGo").addEventListener("click", function () {
+  try {
+    var c = parsePair(el("pairIn").value);
+    if (!cfgSave(c)) { el("pairMsg").textContent = "this browser refuses to store the key"; return; }
+    el("pairMsg").textContent = ""; startWeb(c);
+  } catch (e) { el("pairMsg").textContent = e.message; }
+});
+el("pairPaste").addEventListener("click", function () {
+  if (!(navigator.clipboard && navigator.clipboard.readText)) { el("pairMsg").textContent = "paste is not available here"; return; }
+  navigator.clipboard.readText().then(function (t) { el("pairIn").value = (t || "").trim(); el("pairMsg").textContent = ""; },
+    function () { el("pairMsg").textContent = "paste was refused"; });
+});
+el("hoCopy").addEventListener("click", function () {
+  var t = el("hoCode");
+  function legacy() {
+    t.focus(); t.setSelectionRange(0, t.value.length);
+    var ok = false; try { ok = document.execCommand("copy"); } catch (e) {}
+    el("hoMsg").textContent = ok ? "copied" : "copy failed";
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t.value).then(function () { el("hoMsg").textContent = "copied"; }, legacy);
+  else legacy();
+});
+el("hoHere").addEventListener("click", function () {
+  try { var c = parsePair(el("hoCode").value); if (cfgSave(c)) { el("handoff").classList.add("hide"); startWeb(c); } }
+  catch (e) { el("hoMsg").textContent = e.message; }
+});
+el("unpair").addEventListener("click", function (ev) {
+  ev.preventDefault();
+  try { localStorage.removeItem(LS); localStorage.removeItem(LS + "_last"); } catch (e) {}
+  location.reload();
+});
+
+/* ---- boot -------------------------------------------------------------------------------------- */
+(function () {
+  if (DESKTOP) {
+    /* The desktop window (desktop/EvolutionBoard.cs) reads the snapshot from disk and posts it here whenever
+       the file changes, so the same page draws the same data with no network and no key. */
+    window.chrome.webview.addEventListener("message", function (e) {
+      try { lastErr = ""; setSnap(typeof e.data === "string" ? JSON.parse(e.data) : e.data); }
+      catch (x) { lastErr = "unreadable snapshot: " + x.message; render(); }
+    });
+    window.chrome.webview.postMessage("ready");
+    setInterval(paintAge, 30000);
+    return;
+  }
+  if (FIXTURE) {
+    fetch(FIXTURE, { cache: "no-store" }).then(function (r) { return r.json(); })
+      .then(function (s) {
+        setSnap(s);
+        if (/[?&]view=table/.test(location.search)) setView("table");   /* look-pass screenshots only */
+        if (!SELFTEST) return;
+        var bad = selfCheck();
+        verdict(!bad.length, bad.length ? bad.slice(0, 8).join(" | ") : "fixture: " + charts.length + " charts, table agrees, no overflow");
+      })
+      .catch(function (e) { if (SELFTEST) verdict(false, e.message); });
+    return;
+  }
+  /* A code in the URL FRAGMENT is how the QR reaches this page; the fragment is never sent to a server.
+     It is stripped from the address bar at once, and it does not pair: see #handoff. */
+  var frag = location.hash || "";
+  if (frag.indexOf("#eb1.") === 0) {
+    var code = frag.slice(1);
+    try { history.replaceState(null, "", location.pathname + location.search); } catch (e) {}
+    try { parsePair(code); el("hoCode").value = code; el("handoff").classList.remove("hide"); }
+    catch (e) { el("pairMsg").textContent = e.message; el("pair").classList.remove("hide"); }
+    return;
+  }
+  var c = cfgLoad();
+  if (c && c.url && c.key) startWeb(c);
+  else el("pair").classList.remove("hide");
+})();
+</script>
+
+<script>if ("serviceWorker" in navigator && !(window.chrome && window.chrome.webview)) { navigator.serviceWorker.register("sw.js").catch(function () {}); }</script>
+<script>
+(function () {
+  var BUILD = "20261029113904";
+  if (BUILD.indexOf("APP_BUILD") > -1) return;
+  var busy = false;
+  function check() {
+    if (busy || document.visibilityState !== "visible" || !navigator.onLine) return;
+    busy = true;
+    fetch("./?_au=" + Date.now(), { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (t) {
+        if (t) { var m = t.match(/var BUILD = "([^"]+)"/);
+          if (m && m[1] !== BUILD && m[1].indexOf("APP_BUILD") < 0) { location.reload(); return; } }
+        busy = false;
+      })
+      .catch(function () { busy = false; });
+  }
+  document.addEventListener("visibilitychange", check);
+  window.addEventListener("pageshow", check);
+  window.addEventListener("focus", check);
+})();
+</script>
+</body>
+</html>
