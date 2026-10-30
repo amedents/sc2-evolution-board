@@ -57,17 +57,15 @@ button, input, textarea { font: inherit; letter-spacing: inherit; color: inherit
 :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 }
 
-/* ---- the eight seat colours -----------------------------------------------------------------------
-   SC2's own player colours, per theme: SC2's hue and chroma (chroma floored at 0.10), and SC2's lightness ORDER
-   mapped linearly into OKLCH L 0.45-0.66 (light) and 0.56-0.82 (dark), each at least 3:1 on the surface it sits on.
-   The order is kept, not flattened: Purple and Pink share a hue (307 vs 304) and differ only in lightness, and one
-   lightness for all eight made them the same colour. The palette fails dataviz's colour-blind separation (Green
-   beside Orange, Orange beside Yellow) and cannot pass while staying SC2's - so a colour never stands alone here:
-   every chart, section, jump button and table row names it. Derivation: board/README.md. */
-:root { --seat-1: #b91b22; --seat-2: #0346ff; --seat-3: #0084bd; --seat-4: #702ca1;
-        --seat-5: #9e9700; --seat-6: #c16600; --seat-7: #167e00; --seat-8: #9772c3; }
-:root[data-theme="dark"] { --seat-1: #e54c47; --seat-2: #4a82ff; --seat-3: #2fb2f5; --seat-4: #914fc5;
-        --seat-5: #d4ca00; --seat-6: #ff8c17; --seat-7: #45a638; --seat-8: #c6a0f6; }
+/* ---- the race colours -----------------------------------------------------------------------------
+   The colours the three races play in (genes.COLOUR), keyed by SC2's colour index: Blue 2, Orange 6, Green 7. SC2's
+   own player colours, per theme: SC2's hue and chroma (chroma floored at 0.10), and SC2's lightness ORDER over all
+   eight mapped linearly into OKLCH L 0.45-0.66 (light) and 0.56-0.82 (dark), each at least 3:1 on the surface it sits
+   on. The palette fails dataviz's colour-blind separation (Green beside Orange) and cannot pass while staying SC2's -
+   so a colour never stands alone here: every chart, jump button and table row names it. Derivation:
+   board/README.md. */
+:root { --seat-2: #0346ff; --seat-6: #c16600; --seat-7: #167e00; }
+:root[data-theme="dark"] { --seat-2: #4a82ff; --seat-6: #ff8c17; --seat-7: #45a638; }
 
 /* ---- page frame ----------------------------------------------------------------------------------
    THE PAGE DOES NOT SCROLL; #scroll does, under a header that never moves - position:fixed is avoided because
@@ -106,9 +104,8 @@ header .col { padding-top: var(--padtop); padding-bottom: var(--space-3); }
   font-size: var(--fs-sm); line-height: var(--lh-sm); font-weight: 600; }
 .seg button[aria-pressed="true"] { background: var(--surface); color: var(--text); box-shadow: var(--shadow-2); }
 
-/* The colour jump: SC2's lobby split, four and four, on a phone; one row when there is room. */
-.jump { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); margin-top: var(--space-3); }
-@media (min-width: 40rem) { .jump { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
+/* The colour jump: one button a race, one row. */
+.jump { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2); margin-top: var(--space-3); }
 .jump button { display: flex; align-items: center; justify-content: center; gap: var(--space-2); height: var(--control-md);
   padding: 0 var(--space-2); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface);
   cursor: pointer; font-size: var(--fs-sm); line-height: var(--lh-sm); min-width: 0; }
@@ -121,11 +118,10 @@ header .col { padding-top: var(--padtop); padding-bottom: var(--space-3); }
   font-size: var(--fs-sm); line-height: var(--lh-sm); }
 .legend span { display: inline-flex; align-items: center; gap: var(--space-2); }
 .legend svg { flex: none; }
-section.colour { scroll-margin-top: var(--space-4); }
-h2 { display: flex; align-items: center; gap: var(--space-2); margin: var(--space-8) 0 var(--space-3);
-  font-size: var(--fs-sm); line-height: var(--lh-sm); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 600; }
-.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); }
-@media (min-width: 56rem) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.colour { scroll-margin-top: var(--space-4); }
+.grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-3); margin-top: var(--space-4); }
+/* Three columns show every chart at once, so the colour jump would scroll nowhere: it goes with them. */
+@media (min-width: 56rem) { .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } .jump { display: none; } }
 
 .card { position: relative; margin: 0; background: var(--surface); border: 1px solid var(--border);
   border-radius: var(--radius-lg); padding: var(--space-3) var(--space-4) var(--space-2); }
@@ -408,8 +404,8 @@ function key(colour, dashed) {
 }
 
 /* ---- the page ------------------------------------------------------------------------------------ */
+/* One chart a profile, NOT one per opponent race: every game seats the same two enemies against it. */
 function profileName(p) { return p.colour + " " + p.race; }
-function chartName(p, o) { return profileName(p) + " vs " + o; }
 function races() { return snap.races || RACES; }
 
 function legend() {
@@ -427,45 +423,35 @@ function legend() {
 }
 
 function build() {
-  var sec = el("sections"), jump = el("jump"), bySeat = {};
+  var sec = el("sections"), jump = el("jump"), g = make("div", "grid");
   sec.textContent = ""; jump.textContent = ""; charts = [];
   legend();
-  snap.profiles.forEach(function (p) { (bySeat[p.seat] = bySeat[p.seat] || []).push(p); });
-  Object.keys(bySeat).sort(function (a, b) { return a - b; }).forEach(function (seat) {
-    var ps = bySeat[seat], colour = ps[0].colour;
-    var b = make("button"); b.style.setProperty("--seat", seatVar(seat));
-    b.appendChild(make("span", "dot")); b.appendChild(make("span", null, colour));
-    b.addEventListener("click", function () { setView("charts"); el("seat-" + seat).scrollIntoView({ block: "start" }); });
+  snap.profiles.slice().sort(function (a, b) { return a.seat - b.seat; }).forEach(function (p) {
+    var b = make("button"); b.style.setProperty("--seat", seatVar(p.seat));
+    b.appendChild(make("span", "dot")); b.appendChild(make("span", null, p.colour));
+    b.addEventListener("click", function () { setView("charts"); el("seat-" + p.seat).scrollIntoView({ block: "start" }); });
     jump.appendChild(b);
-    var s = make("section", "colour"); s.id = "seat-" + seat; s.style.setProperty("--seat", seatVar(seat));
-    var h = make("h2"); h.appendChild(make("span", "dot")); h.appendChild(document.createTextNode(colour)); s.appendChild(h);
-    var g = make("div", "grid");
-    ps.forEach(function (p) {
-      races().forEach(function (o) {
-        var v = p.vs[o] || { games: 0, pts: [] }, e = last(v.pts), name = chartName(p, o), wr = e ? pct(e[1]) : "—";
-        var card = make("figure", "card");
-        card.setAttribute("aria-label", name + " " + wr);
-        var t = make("h3"); t.appendChild(make("span", "dot")); t.appendChild(make("span", "nm", name));
-        if (p.generation) t.appendChild(make("span", "gen", "gen " + p.generation));
-        t.appendChild(make("span", "wr", wr));
-        card.appendChild(t);
-        var plot = svg("svg", { "class": "plot", role: "img", "aria-label": name, tabindex: "0" });
-        card.appendChild(plot);
-        var tip = make("div", "tip hide"); card.appendChild(tip);
-        var c = { p: p, o: o, v: v, stock: ((snap.stock || {})[p.race] || {})[o] || [], svg: plot, tip: tip, card: card, idx: -1 };
-        plot.addEventListener("focus", function () { showTip(c, c.v.pts.length - 1); });
-        plot.addEventListener("blur", function () { hideTip(c); });
-        plot.addEventListener("keydown", function (ev) {
-          if (ev.key === "ArrowLeft") { ev.preventDefault(); showTip(c, Math.max(0, c.idx - 1)); }
-          else if (ev.key === "ArrowRight") { ev.preventDefault(); showTip(c, Math.min(c.v.pts.length - 1, c.idx + 1)); }
-        });
-        charts.push(c);
-        g.appendChild(card);
-      });
+    var e = last(p.pts), name = profileName(p), wr = e ? pct(e[1]) : "—";
+    var card = make("figure", "card colour"); card.id = "seat-" + p.seat; card.style.setProperty("--seat", seatVar(p.seat));
+    card.setAttribute("aria-label", name + " " + wr);
+    var t = make("h3"); t.appendChild(make("span", "dot")); t.appendChild(make("span", "nm", name));
+    if (p.generation) t.appendChild(make("span", "gen", "gen " + p.generation));
+    t.appendChild(make("span", "wr", wr));
+    card.appendChild(t);
+    var plot = svg("svg", { "class": "plot", role: "img", "aria-label": name, tabindex: "0" });
+    card.appendChild(plot);
+    var tip = make("div", "tip hide"); card.appendChild(tip);
+    var c = { p: p, v: p, stock: (snap.stock || {})[p.race] || [], svg: plot, tip: tip, card: card, idx: -1 };
+    plot.addEventListener("focus", function () { showTip(c, c.v.pts.length - 1); });
+    plot.addEventListener("blur", function () { hideTip(c); });
+    plot.addEventListener("keydown", function (ev) {
+      if (ev.key === "ArrowLeft") { ev.preventDefault(); showTip(c, Math.max(0, c.idx - 1)); }
+      else if (ev.key === "ArrowRight") { ev.preventDefault(); showTip(c, Math.min(c.v.pts.length - 1, c.idx + 1)); }
     });
-    s.appendChild(g);
-    sec.appendChild(s);
+    charts.push(c);
+    g.appendChild(card);
   });
+  sec.appendChild(g);
   buildTable();
 }
 
@@ -473,7 +459,7 @@ function buildTable() {
   var tb = el("table"), t = make("table"), hd = make("thead"), hr = make("tr"), body = make("tbody");
   tb.textContent = "";
   hr.appendChild(make("th", null, ""));
-  races().forEach(function (o) { hr.appendChild(make("th", null, "vs " + o)); });
+  hr.appendChild(make("th", null, "Winrate"));
   hd.appendChild(hr); t.appendChild(hd);
   function cell(e) {
     var td = make("td");
@@ -486,14 +472,14 @@ function buildTable() {
     sp.style.setProperty("--seat", seatVar(p.seat));
     sp.appendChild(make("span", "dot")); sp.appendChild(document.createTextNode(profileName(p)));
     th.appendChild(sp); tr.appendChild(th);
-    races().forEach(function (o) { tr.appendChild(cell(last((p.vs[o] || {}).pts))); });
+    tr.appendChild(cell(last(p.pts)));
     body.appendChild(tr);
   });
   var g = make("tr", "group"), gh = make("th", null, "Stock AI");
-  gh.colSpan = races().length + 1; g.appendChild(gh); body.appendChild(g);
+  gh.colSpan = 2; g.appendChild(gh); body.appendChild(g);
   races().forEach(function (r) {
     var tr = make("tr"); tr.appendChild(make("th", null, r));
-    races().forEach(function (o) { tr.appendChild(cell(last(((snap.stock || {})[r] || {})[o]))); });
+    tr.appendChild(cell(last((snap.stock || {})[r])));
     body.appendChild(tr);
   });
   t.appendChild(body); tb.appendChild(t);
@@ -577,8 +563,8 @@ function startWeb(c) {
   document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") poll(); });
 }
 
-/* ?selftest=1 with ?fixture=: assert what the user asked for - every colour x race x opponent once, each named with
-   its colour, race, opponent and winrate, the winrate being the line's last point - plus the table agreeing, the
+/* ?selftest=1 with ?fixture=: assert what the user asked for - one chart a profile, each named with its race's colour
+   and race and carrying its winrate, the winrate being the line's last point - plus the table agreeing, the
    hover readout, and nothing leaving the viewport. Run it inside an iframe of the width under test: headless
    Chrome keeps a minimum window width above a phone's (the Queue Board learned that from a screenshot). */
 function overflow() {
@@ -596,12 +582,12 @@ function overflow() {
 }
 function selfCheck() {
   var bad = [], names = {}, rs = races();
-  var re = /^(Red|Blue|Teal|Purple|Yellow|Orange|Green|Pink) (Protoss|Terran|Zerg) vs (Protoss|Terran|Zerg)$/;
-  var cards = document.querySelectorAll("#sections figure.card");
-  if (cards.length !== snap.profiles.length * rs.length) bad.push(cards.length + " charts, not " + snap.profiles.length * rs.length);
+  var re = /^(Blue Protoss|Orange Terran|Green Zerg)$/;
+  var want = rs.length, cards = document.querySelectorAll("#sections figure.card");
+  if (cards.length !== want) bad.push(cards.length + " charts, not " + want);
   charts.forEach(function (c) {
     var nm = c.card.querySelector(".nm").textContent, wr = c.card.querySelector(".wr").textContent, e = last(c.v.pts);
-    if (!re.test(nm)) bad.push("chart named " + nm);
+    if (!re.test(nm) || nm !== profileName(c.p)) bad.push("chart named " + nm);
     names[nm] = 1;
     if (wr !== pct(e && e[1])) bad.push(nm + " shows " + wr + ", its line ends at " + pct(e && e[1]));
     if (e && c.svg.querySelectorAll(".line").length !== 1) bad.push(nm + " has no line");
@@ -630,10 +616,8 @@ function selfCheck() {
   var rows = document.querySelectorAll("#table tbody tr:not(.group)");
   if (rows.length !== snap.profiles.length + rs.length) bad.push("table has " + rows.length + " rows");
   snap.profiles.forEach(function (p, i) {
-    rs.forEach(function (o, j) {
-      var got = rows[i] && rows[i].children[j + 1].querySelector("b").textContent, e = last(p.vs[o].pts);
-      if (got !== pct(e && e[1])) bad.push("table " + chartName(p, o) + " reads " + got);
-    });
+    var got = rows[i] && rows[i].children[1].querySelector("b").textContent, e = last(p.pts);
+    if (got !== pct(e && e[1])) bad.push("table " + profileName(p) + " reads " + got);
   });
   bad = bad.concat(overflow().map(function (s) { return "table: " + s; }));
   setView("charts");
@@ -737,7 +721,7 @@ el("unpair").addEventListener("click", function (ev) {
 <script>if ("serviceWorker" in navigator && !(window.chrome && window.chrome.webview)) { navigator.serviceWorker.register("sw.js").catch(function () {}); }</script>
 <script>
 (function () {
-  var BUILD = "20261029113904";
+  var BUILD = "20261030220328";
   if (BUILD.indexOf("APP_BUILD") > -1) return;
   var busy = false;
   function check() {
