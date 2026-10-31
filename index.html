@@ -58,14 +58,14 @@ button, input, textarea { font: inherit; letter-spacing: inherit; color: inherit
 }
 
 /* ---- the race colours -----------------------------------------------------------------------------
-   The colours the three races play in (genes.COLOUR), keyed by SC2's colour index: Blue 2, Orange 6, Green 7. SC2's
+   The colours the three races play in (genes.COLOUR), keyed by SC2's colour index: Blue 2, Teal 3, Purple 4. SC2's
    own player colours, per theme: SC2's hue and chroma (chroma floored at 0.10), and SC2's lightness ORDER over all
    eight mapped linearly into OKLCH L 0.45-0.66 (light) and 0.56-0.82 (dark), each at least 3:1 on the surface it sits
-   on. The palette fails dataviz's colour-blind separation (Green beside Orange) and cannot pass while staying SC2's -
-   so a colour never stands alone here: every chart, jump button and table row names it. Derivation:
-   board/README.md. */
-:root { --seat-2: #0346ff; --seat-6: #c16600; --seat-7: #167e00; }
-:root[data-theme="dark"] { --seat-2: #4a82ff; --seat-6: #ff8c17; --seat-7: #45a638; }
+   on. The palette fails dataviz's colour separation (Teal beside Blue, delta E 12.9 under the normal-vision floor of
+   15) and cannot pass while staying SC2's - so a colour never stands alone here: every chart, jump button and table
+   row names it. Derivation: board/README.md. */
+:root { --seat-2: #0346ff; --seat-3: #0084bd; --seat-4: #702ca1; }
+:root[data-theme="dark"] { --seat-2: #4a82ff; --seat-3: #2fb2f5; --seat-4: #914fc5; }
 
 /* ---- page frame ----------------------------------------------------------------------------------
    THE PAGE DOES NOT SCROLL; #scroll does, under a header that never moves - position:fixed is avoided because
@@ -582,12 +582,14 @@ function overflow() {
 }
 function selfCheck() {
   var bad = [], names = {}, rs = races();
-  var re = /^(Blue Protoss|Orange Terran|Green Zerg)$/;
+  var re = /^(Teal Protoss|Blue Terran|Purple Zerg)$/;
   var want = rs.length, cards = document.querySelectorAll("#sections figure.card");
   if (cards.length !== want) bad.push(cards.length + " charts, not " + want);
   charts.forEach(function (c) {
     var nm = c.card.querySelector(".nm").textContent, wr = c.card.querySelector(".wr").textContent, e = last(c.v.pts);
     if (!re.test(nm) || nm !== profileName(c.p)) bad.push("chart named " + nm);
+    /* A seat with no --seat-N here draws its line in no colour at all, and its name still reads right. */
+    if (!getComputedStyle(document.documentElement).getPropertyValue("--seat-" + c.p.seat).trim()) bad.push(nm + " has no colour --seat-" + c.p.seat);
     names[nm] = 1;
     if (wr !== pct(e && e[1])) bad.push(nm + " shows " + wr + ", its line ends at " + pct(e && e[1]));
     if (e && c.svg.querySelectorAll(".line").length !== 1) bad.push(nm + " has no line");
@@ -721,7 +723,7 @@ el("unpair").addEventListener("click", function (ev) {
 <script>if ("serviceWorker" in navigator && !(window.chrome && window.chrome.webview)) { navigator.serviceWorker.register("sw.js").catch(function () {}); }</script>
 <script>
 (function () {
-  var BUILD = "20261030220328";
+  var BUILD = "20261031095907";
   if (BUILD.indexOf("APP_BUILD") > -1) return;
   var busy = false;
   function check() {
